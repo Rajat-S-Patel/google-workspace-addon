@@ -9,6 +9,10 @@ app.get('/home',(req,res) => {
     console.log('home called');
     res.send('Home called');
 })
+app.post('/home',(req,res) => {
+    console.log('home called post');
+    res.send('Home called Post');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
