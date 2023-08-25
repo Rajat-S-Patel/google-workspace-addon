@@ -1,0 +1,23 @@
+{
+  "name": "google-workspace-addon",
+  "version": "1.0.0",
+  "description": "sample google workspace addon",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rajat-S-Patel/google-workspace-addon.git"
+  },
+  "author": "Rajat Patel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rajat-S-Patel/google-workspace-addon/issues"
+  },
+  "homepage": "https://github.com/Rajat-S-Patel/google-workspace-addon#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
