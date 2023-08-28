@@ -1,5 +1,5 @@
 const express = require('express');
-const { card } = require('./data');
+const { card, welcomeCard } = require('./data');
 const bodyParser = require('body-parser');
 const app = express()
 app.use(bodyParser.json());
@@ -20,8 +20,10 @@ app.post('/signIn',(req,res) => {
   console.log('signIn called');
   const eventObject = req.body;
   console.log("req-body: ",eventObject);
-  console.log("formInputs: ",eventObject.commonEventObject.formInputs.username,eventObject.commonEventObject.formInputs.password);
-  return res.send('SignIn called: ');
+  const userName = eventObject.commonEventObject.formInputs.username.stringInputs.value[0];
+  const password = eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
+  console.log("userName:",userName," Password: ",password);
+  return res.json(welcomeCard);
 })
 app.post('/home',(req,res) => {
     console.log('home called post');
