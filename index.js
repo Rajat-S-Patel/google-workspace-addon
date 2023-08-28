@@ -1,4 +1,5 @@
-const express = require('express')
+const express = require('express');
+const { card } = require('./data');
 const app = express()
 const PORT = process.env.PORT || 3000;
 
@@ -13,65 +14,12 @@ app.get('/home',(req,res) => {
     res.send('Home called');
 })
 app.post('/signIn',(req,res) => {
-  console.log('signIn called');
+  console.log('signIn called: ',req.body);
   return res.send('SignIn called');
 })
 app.post('/home',(req,res) => {
     console.log('home called post');
-    let card = {
-      header: {
-        title:"Oreka RMS",
-        subtitle:"Spreadsheet Data",
-        imageUrl: "https://google-workspace-addon.onrender.com/oreka-logo-50.png",
-        imageType:"SQUARE",
-        imageAltText:"Oreka-Logo"
-      },
-      sections: [{
-        widgets: [{
-          textParagraph: {
-            text: 'Welcome to Oreka RMS'
-          }
-        },
-        {
-          textInput: {
-            name: "username",
-            "label": "Username",
-            "hintText": "Enter your username"
-          }
-        },
-        {
-          "textInput": {
-            "name": "password",
-            "label": "Password",
-            "hintText": "Enter your password",
-            "type": "SINGLE_LINE"
-          }
-        },
-        {
-          "buttonList": {
-            "buttons":[
-              {
-                "text":"Sign In",
-                onClick:{
-                  action: {
-                    function:"https://google-workspace-addon.onrender.com/signIn"
-                  }
-                }
-              }
-            ]
-          }
-        }]
-      }],
-      cardActions: [{
-        actionLabel:"View Details",
-        onClick: {
-          action: {
-            function: "handleCardAction"
-          }
-        }
-      }],
-      name:"Home Card"
-    };
+
     res.json({
       action: {
         navigations: [{
