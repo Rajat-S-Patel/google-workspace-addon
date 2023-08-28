@@ -1,4 +1,4 @@
-export const card = {
+const card = {
     header: {
       title:"Oreka RMS",
       subtitle:"Spreadsheet Data",
@@ -55,3 +55,4 @@ export const card = {
     name:"Home Card"
   };
   
+  module.exports = {card};
