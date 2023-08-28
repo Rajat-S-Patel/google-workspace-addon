@@ -20,6 +20,7 @@ app.post('/signIn',(req,res) => {
   console.log('signIn called');
   const eventObject = req.body;
   console.log("req-body: ",eventObject);
+  console.log("formInputs: ",eventObject.commonEventObject.formInputs.username,eventObject.commonEventObject.formInputs.password);
   return res.send('SignIn called: ');
 })
 app.post('/home',(req,res) => {

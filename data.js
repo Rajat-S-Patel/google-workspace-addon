@@ -32,17 +32,7 @@ const card = {
               "text":"Sign In",
               onClick:{
                 action: {
-                  function:"https://google-workspace-addon.onrender.com/signIn",
-                  parameters: [
-                    {
-                        key:"username",
-                        value:"{{username.value}}"
-                    },
-                    {
-                        key:"password",
-                        value:"{{password.value}}"
-                    }
-                  ]
+                  function:"https://google-workspace-addon.onrender.com/signIn"
                 }
               }
             }
