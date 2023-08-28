@@ -27,16 +27,41 @@ app.post('/home',(req,res) => {
           textParagraph: {
             text: 'Welcome to Oreka RMS'
           }
+        },
+        {
+          textInput: {
+            name: "username",
+            "label": "Username",
+            "hintText": "Enter your username"
+          }
+        },
+        {
+          "textInput": {
+            "name": "password",
+            "label": "Password",
+            "hintText": "Enter your password",
+            "type": "SINGLE_LINE"
+          }
+        },
+        {
+          "button": {
+            "text": "Sign In",
+            "onClick": {
+              "action": {
+                "function": "yourSignInFunction"
+              }
+            }
+          }
         }]
       }],
-      cardActions: {
+      cardActions: [{
         actionLabel:"View Details",
         onClick: {
           action: {
             function: "handleCardAction"
           }
         }
-      },
+      }],
       name:"Home Card"
     };
     res.json({
