@@ -18,7 +18,7 @@ app.post('/home',(req,res) => {
       sections: [{
         widgets: [{
           textParagraph: {
-            text: 'Hello world'
+            text: 'Welcome to Oreka RMS'
           }
         }]
       }]
