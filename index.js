@@ -1,6 +1,9 @@
 const express = require('express');
 const { card } = require('./data');
+const bodyParser = require('body-parser');
 const app = express()
+app.use(bodyParser.json());
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'))
@@ -14,8 +17,10 @@ app.get('/home',(req,res) => {
     res.send('Home called');
 })
 app.post('/signIn',(req,res) => {
-  console.log('signIn called: ',req.body);
-  return res.send('SignIn called');
+  console.log('signIn called');
+  const eventObject = req.body;
+  console.log("req-body: ",eventObject);
+  return res.send('SignIn called: ');
 })
 app.post('/home',(req,res) => {
     console.log('home called post');
