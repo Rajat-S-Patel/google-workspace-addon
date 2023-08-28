@@ -12,6 +12,10 @@ app.get('/home',(req,res) => {
     console.log('home called');
     res.send('Home called');
 })
+app.post('/signIn',(req,res) => {
+  console.log('signIn called');
+  return res.send('SignIn called');
+})
 app.post('/home',(req,res) => {
     console.log('home called post');
     let card = {
@@ -44,13 +48,17 @@ app.post('/home',(req,res) => {
           }
         },
         {
-          "button": {
-            "text": "Sign In",
-            "onClick": {
-              "action": {
-                "function": "yourSignInFunction"
+          "buttonList": {
+            "buttons":[
+              {
+                "text":"Sign In",
+                onClick:{
+                  action: {
+                    function:"https://google-workspace-addon.onrender.com/signIn"
+                  }
+                }
               }
-            }
+            ]
           }
         }]
       }],
