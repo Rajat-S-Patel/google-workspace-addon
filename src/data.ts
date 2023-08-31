@@ -24,7 +24,7 @@ const card = {
           textInput: {
             name: "password",
             label: "Password",
-            type: "SINGLE_LINE",
+            type: "PASSWORD",
           },
         },
         {
@@ -96,3 +96,4 @@ const welcomeCard = {
 };
 
 module.exports = { card, welcomeCard };
+export {card, welcomeCard};
