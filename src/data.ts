@@ -28,6 +28,12 @@ const card = {
           },
         },
         {
+          textInput: {
+            name: "spreadsheetId",
+            label: "SpreadSheet Id",
+          },
+        },
+        {
           buttonList: {
             buttons: [
               {

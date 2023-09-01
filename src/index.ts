@@ -27,13 +27,13 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.username.stringInputs.value[0];
   const password =
     eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
+  const spreadsheetId =  eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs.value[0];
   console.log("userName:", userName, " Password: ", password);
-  console.log("sheet: ",eventObject.sheets);
+  console.log("spreadSheetId: ",eventObject.spreadSheetId);
   return res.json(welcomeCard);
 });
 app.post("/home", (req, res) => {
   console.log("home called post");
-  console.log("req at /home :",req.body);
   res.json({
     action: {
       navigations: [
