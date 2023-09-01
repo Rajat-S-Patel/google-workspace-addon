@@ -28,6 +28,7 @@ app.post("/signIn", (req, res) => {
   const password =
     eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
   console.log("userName:", userName, " Password: ", password);
+  console.log("sheet: ",eventObject.sheets);
   return res.json(welcomeCard);
 });
 app.post("/home", (req, res) => {
