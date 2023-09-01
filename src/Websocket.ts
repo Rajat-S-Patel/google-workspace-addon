@@ -28,14 +28,17 @@ class WebSocketService implements IWebSocket {
         pwd: "hello12345",
         serialNo: "fcd4fe32919aa9d64b69703004fa3a0d",
       });
-      this.sendMessage({"type":"FETCH_CLIENT_POSITIONS","loginUser":"1001"});
-      this.sendMessage({"type":"ACTIVE_COLUMNS_CHANGED","requestType":"FETCH_CLIENT_POSITIONS","columns":["login","symbol","ag-Grid-AutoColumn","volume","companyvolume","previousvolume","difference"],"loginUser":"1001"});
-      this.sendMessage({"type":"FETCH_CLIENT_POSITIONS","action":"refresh","time":0});
+      setTimeout(() => {
+        this.sendMessage({"type":"ACTIVE_COLUMNS_CHANGED","requestType":"FETCH_CLIENT_POSITIONS","columns":["login","symbol","ag-Grid-AutoColumn","volume","companyvolume","previousvolume","difference"],"loginUser":"1001"});
+        this.sendMessage({"type":"FETCH_CLIENT_POSITIONS","action":"refresh","time":0,"loginUser":"1001"});
+    }, 100);
     });
 
     this.websocket.on("message",(message: any) =>  {
-      const decryptedMessage = this.messageDecrypter.decrypt(message.toString());
-      console.log("decryptedMessage:", decryptedMessage);
+      const decryptedMessage:any = this.messageDecrypter.decrypt(message.toString());
+      if(decryptedMessage.insert) {
+          console.log("decryptedMessage:", decryptedMessage);
+      }
     });
   }
   listen() {}

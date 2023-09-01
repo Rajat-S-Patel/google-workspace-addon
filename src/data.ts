@@ -24,7 +24,7 @@ const card = {
           textInput: {
             name: "password",
             label: "Password",
-            type: "PASSWORD",
+            type: "SINGLE_LINE",
           },
         },
         {
