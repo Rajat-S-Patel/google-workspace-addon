@@ -29,7 +29,7 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
   const spreadsheetId =  eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs.value[0];
   console.log("userName:", userName, " Password: ", password);
-  console.log("spreadSheetId: ",eventObject.spreadSheetId);
+  console.log("spreadSheetId: ",spreadsheetId);
   return res.json(welcomeCard);
 });
 app.post("/home", (req, res) => {
