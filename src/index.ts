@@ -32,7 +32,7 @@ app.post("/signIn", (req, res) => {
 });
 app.post("/home", (req, res) => {
   console.log("home called post");
-
+  console.log("req at /home :",req.body);
   res.json({
     action: {
       navigations: [
