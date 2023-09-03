@@ -1,50 +1,59 @@
 import { IWebSocket } from "../Websocket";
-const axios = require('axios');
+const axios = require("axios");
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 const { WebSocketService } = require("../Websocket");
+const { google } = require("googleapis");
 
 export interface ISpreadSheetService {
-  register(spreadSheetId:string):string;
+  register(spreadSheetId: string): string;
 }
 
-class SpreadSheetService implements ISpreadSheetService {
-  private mp:Map<string,string>;
-  private websocket:IWebSocket;
+const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
 
+class SpreadSheetService implements ISpreadSheetService {
+  private mp: Map<string, string>;
+  private websocket: IWebSocket;
+  private sheets;
   constructor() {
-    this.mp = new Map<string,string>();
+    this.mp = new Map<string, string>();
     this.websocket = new WebSocketService();
     this.websocket.connect();
+    this.sheets = google.sheets({ version: "v4", auth: API_KEY });
   }
-  register(spreadSheetId:string):string{
+  register(spreadSheetId: string): string {
     const id = this.mp.get(spreadSheetId);
-    if(id) {
+    if (id) {
       return id;
     }
     const subscriptionId = uuidv4();
-    this.mp.set(spreadSheetId,subscriptionId);
-    this.websocket.register(spreadSheetId,(data:any)=>this.sendData(data,spreadSheetId));
+    this.mp.set(spreadSheetId, subscriptionId);
+    this.websocket.register(spreadSheetId, (data: any) =>
+      this.sendData(data, spreadSheetId)
+    );
     return subscriptionId;
   }
-  sendData(data:any,spreadSheetId:string) {
-    console.log("data: ",data,spreadSheetId);
-    // https://sheets.googleapis.com/v4/spreadsheets/SPREADSHEET_ID/values/Sheet1!A1:D5?valueInputOption=VALUE_INPUT_OPTION
-    axios.put(`https://sheets.googleapis.com/v4/spreadsheets/${spreadSheetId}/values/Sheet1!A1:D5?valueInputOption=RAW`,{
-      "range": "Sheet1!A1:D5",
-      "majorDimension": "ROWS",
-      "values": [
-        ["Item", "Cost", "Stocked", "Ship Date"],
-        ["Wheel", "$20.50", "4", "3/1/2016"],
-        ["Door", "$15", "2", "3/15/2016"],
-        ["Engine", "$100", "1", "3/20/2016"],
-        ["Totals", "=SUM(B2:B4)", "=SUM(C2:C4)", "=MAX(D2:D4)"]
-      ],
-    }).then(res => {
-      console.log("response:",res);
-    }).catch(err => {
-      console.log("error: ",err);
-    })
+  sendData(data: any, spreadSheetId: string) {
+    console.log("data: ", data, spreadSheetId);
+    const range = "Sheet1!A1:B2"; // Modify this to your desired range
+
+    // The data you want to write to the spreadsheet
+    const values = [
+      ["Value 1", "Value 2"],
+      ["Value 3", "Value 4"],
+    ];
+    this.sheets.spreadsheets.values.update({
+      spreadsheetId: spreadSheetId,
+      range: range,
+      valueInputOption: 'RAW',
+      resource: { values: values }
+  }, (err, response) => {
+      if (err) {
+          console.error('The API returned an error:', err);
+          return;
+      }
+      console.log('Data written to the spreadsheet:', response.data);
+  });
   }
 }
 let spreadSheetServiceInstance: ISpreadSheetService | null = null;
