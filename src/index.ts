@@ -1,15 +1,18 @@
-import { IWebSocket } from "./Websocket";
+import { ISpreadSheetService } from "./services/SpreadSheetService";
 
 const express = require("express");
 const { card, welcomeCard } = require("./data");
 const bodyParser = require("body-parser");
-const { WebSocketService, IWebSocket } = require("./Websocket");
+const {
+  getSpreadSheetServiceInstance,
+} = require("./services/SpreadSheetService");
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
 const PORT = process.env.PORT || 3000;
+const spreadSheetService: ISpreadSheetService = getSpreadSheetServiceInstance();
 
 app.get("/", (req, res) => {
   console.log("root called");
@@ -27,9 +30,14 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.username.stringInputs.value[0];
   const password =
     eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
-  const spreadsheetId =  eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs.value[0];
+  const spreadsheetId =
+    eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
+      .value[0];
   console.log("userName:", userName, " Password: ", password);
-  console.log("spreadSheetId: ",spreadsheetId);
+  console.log("spreadSheetId: ", spreadsheetId);
+
+  const subscriptionId = spreadSheetService.register(spreadsheetId);
+  console.log("subscriptionId: ", subscriptionId);
   return res.json(welcomeCard);
 });
 app.post("/home", (req, res) => {
@@ -48,7 +56,3 @@ app.post("/home", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
-
-const websocket:IWebSocket = new WebSocketService();
-websocket.connect()
-
