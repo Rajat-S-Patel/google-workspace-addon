@@ -51,9 +51,8 @@ class SpreadSheetService implements ISpreadSheetService {
     const values = [ACTIVE_COLUMNS];
     data.insert.forEach(row => {
       values.push([]);
-      Object.keys(row).forEach(field => {
-        if(ACTIVE_COLUMNS.indexOf(field) === -1) return;
-        values[values.length-1].push(row[field]);
+      ACTIVE_COLUMNS.forEach(col => {
+        values[values.length-1].push(row[col]??"");
       })
     });
     // The data you want to write to the spreadsheet
