@@ -33,15 +33,11 @@ app.post("/signIn", (req, res) => {
   const spreadsheetId =
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
-  console.log("userName:", userName, " Password: ", password);
-  console.log("spreadSheetId: ", spreadsheetId);
 
   const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
-  console.log("subscriptionId: ", subscriptionId);
   return res.json(welcomeCard);
 });
 app.post("/home", (req, res) => {
-  console.log("home called post");
   res.json({
     action: {
       navigations: [

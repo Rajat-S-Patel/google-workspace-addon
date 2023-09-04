@@ -11,6 +11,7 @@ export interface ISpreadSheetService {
 
 // const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
 const CLIENT_ID = "277891092538-1l88abaphnnhp97fj8id48dpvq528khi.apps.googleusercontent.com";
+const ACTIVE_COLUMNS = ["login","symbol","previousvolume","difference","volume","companyvolume"];
 class SpreadSheetService implements ISpreadSheetService {
   private mp: Map<string, string>;
   private websocket: IWebSocket;
@@ -35,15 +36,20 @@ class SpreadSheetService implements ISpreadSheetService {
   }
   sendData(data: any, spreadSheetId: string,userAuthToken:string) {
     console.log("data: ", data, spreadSheetId);
-    const range = "Sheet1!A1:B2"; // Modify this to your desired range
+    const range = `Sheet1!A1:F${data.insert.length+1}`; // Modify this to your desired range
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
     oAuth2Client.setCredentials({ access_token: userAuthToken });
     this.sheets = google.sheets({ version: "v4", auth: oAuth2Client });
+    const values = [ACTIVE_COLUMNS];
+    data.insert.forEach(row => {
+      values.push([]);
+      Object.keys(row).forEach(field => {
+        if(ACTIVE_COLUMNS.indexOf(field) === -1) return;
+        values[values.length-1].push(row[field]);
+      })
+    });
     // The data you want to write to the spreadsheet
-    const values = [
-      ["Value 1", "Value 2"],
-      ["Value 3", "Value 4"],
-    ];
+    
     this.sheets.spreadsheets.values.update({
       spreadsheetId: spreadSheetId,
       range: range,
