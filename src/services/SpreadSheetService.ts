@@ -11,7 +11,15 @@ export interface ISpreadSheetService {
 
 // const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
 const CLIENT_ID = "277891092538-1l88abaphnnhp97fj8id48dpvq528khi.apps.googleusercontent.com";
-const ACTIVE_COLUMNS = ["login","symbol","previousvolume","difference","volume","companyvolume"];
+const ACTIVE_COLUMNS = [
+  "login",
+  "symbol",
+  "subbroker",
+  "clientbalance",
+  "clientfloatingpl",
+  "clientplnet",
+  "companyplnet",
+];
 class SpreadSheetService implements ISpreadSheetService {
   private mp: Map<string, string>;
   private websocket: IWebSocket;
@@ -36,7 +44,7 @@ class SpreadSheetService implements ISpreadSheetService {
   }
   sendData(data: any, spreadSheetId: string,userAuthToken:string) {
     console.log("data: ", data, spreadSheetId);
-    const range = `Sheet1!A1:F${data.insert.length+1}`; // Modify this to your desired range
+    const range = `Sheet1!A1:G${data.insert.length+1}`; // Modify this to your desired range
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
     oAuth2Client.setCredentials({ access_token: userAuthToken });
     this.sheets = google.sheets({ version: "v4", auth: oAuth2Client });
