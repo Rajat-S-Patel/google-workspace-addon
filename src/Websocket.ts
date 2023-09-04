@@ -54,7 +54,8 @@ class WebSocketService implements IWebSocket {
     const current = this.cbMap.get(spreadSheetId);
     if(current) return;
     this.cbMap.set(spreadSheetId,cb);
-    setTimeout(() => {
+    setInterval(() => {
+      console.debug("sending message....");
       this.sendMessage({"type":"FETCH_CLIENT_POSITIONS","action":"refresh","time":0,"loginUser":"1001"});
     },3000);
   };
