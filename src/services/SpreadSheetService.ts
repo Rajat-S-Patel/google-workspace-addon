@@ -6,11 +6,11 @@ const { WebSocketService } = require("../Websocket");
 const { google } = require("googleapis");
 
 export interface ISpreadSheetService {
-  register(spreadSheetId: string): string;
+  register(spreadSheetId: string,userAuthToken:string): string;
 }
 
-const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
-
+// const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
+const CLIENT_ID = "277891092538-1l88abaphnnhp97fj8id48dpvq528khi.apps.googleusercontent.com";
 class SpreadSheetService implements ISpreadSheetService {
   private mp: Map<string, string>;
   private websocket: IWebSocket;
@@ -19,9 +19,9 @@ class SpreadSheetService implements ISpreadSheetService {
     this.mp = new Map<string, string>();
     this.websocket = new WebSocketService();
     this.websocket.connect();
-    this.sheets = google.sheets({ version: "v4", auth: API_KEY });
+    
   }
-  register(spreadSheetId: string): string {
+  register(spreadSheetId: string,userAuthToken:string): string {
     const id = this.mp.get(spreadSheetId);
     if (id) {
       return id;
@@ -29,14 +29,16 @@ class SpreadSheetService implements ISpreadSheetService {
     const subscriptionId = uuidv4();
     this.mp.set(spreadSheetId, subscriptionId);
     this.websocket.register(spreadSheetId, (data: any) =>
-      this.sendData(data, spreadSheetId)
+      this.sendData(data, spreadSheetId, userAuthToken)
     );
     return subscriptionId;
   }
-  sendData(data: any, spreadSheetId: string) {
+  sendData(data: any, spreadSheetId: string,userAuthToken:string) {
     console.log("data: ", data, spreadSheetId);
     const range = "Sheet1!A1:B2"; // Modify this to your desired range
-
+    const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
+    oAuth2Client.setCredentials({ access_token: userAuthToken });
+    this.sheets = google.sheets({ version: "v4", auth: oAuth2Client });
     // The data you want to write to the spreadsheet
     const values = [
       ["Value 1", "Value 2"],

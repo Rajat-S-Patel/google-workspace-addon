@@ -36,7 +36,7 @@ app.post("/signIn", (req, res) => {
   console.log("userName:", userName, " Password: ", password);
   console.log("spreadSheetId: ", spreadsheetId);
 
-  const subscriptionId = spreadSheetService.register(spreadsheetId);
+  const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
   console.log("subscriptionId: ", subscriptionId);
   return res.json(welcomeCard);
 });
