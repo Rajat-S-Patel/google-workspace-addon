@@ -1,5 +1,5 @@
 const { cloneDeep } = require("lodash");
-require('dotenv').config();
+require("dotenv").config();
 
 const card = {
   header: {
@@ -109,15 +109,19 @@ function getWelcomeCard(spreadSheetId: string) {
   const orekaUrl = process.env.OREKA_URL;
   newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets.push(
     {
-      button: {
-        text: "Click to Configure",
-        onClick: {
-          action: {
-            openLink: {
-              url: `${orekaUrl}/addon-configure/${spreadSheetId}`,
+      buttonList: {
+        buttons: [
+          {
+            text: "Click to Configure",
+            onClick: {
+              action: {
+                openLink: {
+                  url: `${orekaUrl}/addon-configure/${spreadSheetId}`,
+                },
+              },
             },
           },
-        },
+        ],
       },
     }
   );
