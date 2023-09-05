@@ -114,10 +114,8 @@ function getWelcomeCard(spreadSheetId: string) {
           {
             text: "Click to Configure",
             onClick: {
-              action: {
-                openLink: {
-                  url: `${orekaUrl}/addon-configure/${spreadSheetId}`,
-                },
+              openLink: {
+                url: `${orekaUrl}/addon-configure/${spreadSheetId}`,
               },
             },
           },
