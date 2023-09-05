@@ -1,7 +1,7 @@
 import { ISpreadSheetService } from "./services/SpreadSheetService";
 
 const express = require("express");
-const { card, welcomeCard } = require("./data");
+const { card, getWelcomeCard } = require("./data");
 const bodyParser = require("body-parser");
 const {
   getSpreadSheetServiceInstance,
@@ -34,8 +34,8 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
 
-  const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
-  return res.json(welcomeCard);
+  // const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
+  return res.json(getWelcomeCard(spreadsheetId));
 });
 app.post("/home", (req, res) => {
   res.json({

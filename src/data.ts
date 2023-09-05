@@ -1,3 +1,5 @@
+const { cloneDeep } = require("lodash");
+
 const card = {
   header: {
     title: "Oreka RMS",
@@ -101,5 +103,19 @@ const welcomeCard = {
   stateChanged: true,
 };
 
-module.exports = { card, welcomeCard };
-export {card, welcomeCard};
+function getWelcomeCard(spreadSheetId: string) {
+  const newCard = cloneDeep(welcomeCard);
+  const orekaUrl = process.env.OREKA_URL;
+  newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets.push(
+    {
+      openLink: {
+        url: `${orekaUrl}/addon-configure/${spreadSheetId}`,
+        text: "Click to Configure",
+      },
+    }
+  );
+  return newCard;
+}
+
+module.exports = { card, getWelcomeCard };
+export { card };
