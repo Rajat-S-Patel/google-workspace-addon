@@ -1,6 +1,7 @@
 import { ISpreadSheetService } from "./services/SpreadSheetService";
 
 const express = require("express");
+const cors = require('cors');
 const { card, getWelcomeCard } = require("./data");
 const bodyParser = require("body-parser");
 const {
@@ -9,8 +10,10 @@ const {
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
+
 const PORT = process.env.PORT || 3000;
 const spreadSheetService: ISpreadSheetService = getSpreadSheetServiceInstance();
 
@@ -18,10 +21,12 @@ app.get("/", (req, res) => {
   console.log("root called");
   res.send("Hello World!");
 });
+
 app.get("/home", (req, res) => {
   console.log("home called");
   res.send("Home called");
 });
+
 app.post("/signIn", (req, res) => {
   console.log("signIn called");
   const eventObject = req.body;
@@ -37,6 +42,7 @@ app.post("/signIn", (req, res) => {
   const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
   return res.json(getWelcomeCard(spreadsheetId));
 });
+
 app.post("/home", (req, res) => {
   res.json({
     action: {
@@ -47,6 +53,13 @@ app.post("/home", (req, res) => {
       ],
     },
   });
+});
+
+app.post('/configs',(req,res) => {
+  const data = req.body;
+  console.log("data: ",data);
+  spreadSheetService.setConfigs(data.spreadSheetId,data.configs);
+  res.send("Recieved configs");
 });
 
 app.listen(PORT, () => {

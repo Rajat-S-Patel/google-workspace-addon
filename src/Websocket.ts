@@ -4,8 +4,9 @@ const { WebSocket } = require("ws");
 const MessageDecrypter = require("./MessageDecrypter");
 
 export type DataCallBack = (data: any) => void;
+export type onConnect = () => void;
 export interface IWebSocket {
-  connect: () => void;
+  connect: (cb:onConnect) => void;
   listen: () => void;
   sendMessage: (message: any) => void;
   register: (spreadSheetId: string, cb: DataCallBack) => void;
@@ -19,35 +20,36 @@ class WebSocketService implements IWebSocket {
     this.messageDecrypter = new MessageDecrypter();
     this.cbMap = new Map<string, DataCallBack>();
   }
-  connect() {
+  connect(cb:onConnect) {
     this.websocket = new WebSocket("wss://auttrading.com:90", {
       perMessageDeflate: false,
     });
     this.websocket.on("error", console.error);
 
     this.websocket.on("open", (message: string) => {
+      cb(); // execute onConnect callBack ...
       this.sendMessage({
         type: "login",
         login: "1001",
         pwd: "hello12345",
         serialNo: "fcd4fe32919aa9d64b69703004fa3a0d",
       });
-      setTimeout(() => {
-        this.sendMessage({
-          type: "ACTIVE_COLUMNS_CHANGED",
-          requestType: "FETCH_CLIENT_POSITIONS",
-          columns: [
-            "login",
-            "symbol",
-            "subbroker",
-            "clientbalance",
-            "clientfloatingpl",
-            "clientplnet",
-            "companyplnet",
-          ],
-          loginUser: "1001",
-        });
-      }, 100);
+      // setTimeout(() => {
+      //   this.sendMessage({
+      //     type: "ACTIVE_COLUMNS_CHANGED",
+      //     requestType: "FETCH_CLIENT_POSITIONS",
+      //     columns: [
+      //       "login",
+      //       "symbol",
+      //       "subbroker",
+      //       "clientbalance",
+      //       "clientfloatingpl",
+      //       "clientplnet",
+      //       "companyplnet",
+      //     ],
+      //     loginUser: "1001",
+      //   });
+      // }, 100);
     });
 
     this.websocket.on("message", (message: any) => {
@@ -63,6 +65,7 @@ class WebSocketService implements IWebSocket {
   }
   listen() {}
   sendMessage(message: any): void {
+    console.log("sending message:",message);
     this.websocket.send(JSON.stringify(message));
   }
   register(spreadSheetId: string, cb: DataCallBack): void {
@@ -77,7 +80,7 @@ class WebSocketService implements IWebSocket {
         time: 0,
         loginUser: "1001",
       });
-    }, 3000);
+    }, 5000);
   }
 }
 
