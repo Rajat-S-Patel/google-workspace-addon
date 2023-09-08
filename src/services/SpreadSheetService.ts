@@ -129,7 +129,7 @@ class SpreadSheetService implements ISpreadSheetService {
       },
       (err, response) => {
         if (err) {
-          // console.error("The API returned an error:", err);
+          console.error("The API returned an error:", err);
           return;
         }
         console.log("Data written to the spreadsheet:", response.data);
