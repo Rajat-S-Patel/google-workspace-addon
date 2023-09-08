@@ -106,6 +106,7 @@ class SpreadSheetService implements ISpreadSheetService {
   private sendData(data: any, spreadSheetId: string, userAuthToken: string) {
     const configs = this.configMap.get(spreadSheetId);
     if(!configs) return;
+    console.log("data: ",data);
     const range = `Sheet1!A1:${String.fromCharCode(65+configs.visibleCols.length-1)}${data.insert.length + 1}`; // Modify this to your desired range
     console.log("range:",range);
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
