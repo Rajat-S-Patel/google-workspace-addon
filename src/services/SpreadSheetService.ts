@@ -3,7 +3,10 @@ import { IWebSocket } from "../Websocket";
 const { v4: uuidv4 } = require("uuid");
 const { WebSocketService } = require("../Websocket");
 const { google } = require("googleapis");
-const {ACTIVE_COLUMNS_CHANGED,FETCH_CLIENT_POSITIONS} = require('./constants');
+const {
+  ACTIVE_COLUMNS_CHANGED,
+  FETCH_CLIENT_POSITIONS,
+} = require("./constants");
 
 export interface ISpreadSheetService {
   register(spreadSheetId: string, userAuthToken: string): void;
@@ -79,6 +82,30 @@ class SpreadSheetService implements ISpreadSheetService {
     if (this.mp.has(spreadSheetId)) {
       return;
     }
+
+    const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
+    oAuth2Client.setCredentials({ access_token: userAuthToken });
+    const sheets = google.sheets({ version: "v4", auth: oAuth2Client });
+    try {
+      sheets.spreadsheets
+        .get({
+          spreadsheetId:spreadSheetId,
+        })
+        .then((res) => {
+          const tabs = res.data.sheets.map((sheet) => {
+            return {
+              sheetId: sheet.properties.sheetId,
+              title: sheet.properties.title,
+            };
+          });
+
+          console.log("Tabs in the spreadsheet:");
+          console.log(tabs);
+        });
+    } catch (err) {
+      console.error("The API returned an error:", err);
+    }
+
     this.mp.add(spreadSheetId);
     this.websockets.set(spreadSheetId, new WebSocketService());
     const websocket = this.websockets.get(spreadSheetId);
@@ -105,10 +132,12 @@ class SpreadSheetService implements ISpreadSheetService {
   }
   private sendData(data: any, spreadSheetId: string, userAuthToken: string) {
     const configs = this.configMap.get(spreadSheetId);
-    if(!configs) return;
-    console.log("data: ",data);
-    const range = `Sheet1!A1:${String.fromCharCode(65+configs.visibleCols.length-1)}${data.insert.length + 1}`; // Modify this to your desired range
-    console.log("range:",range);
+    if (!configs) return;
+    console.log("data: ", data);
+    const range = `Sheet1!A1:${String.fromCharCode(
+      65 + configs.visibleCols.length - 1
+    )}${data.insert.length + 1}`; // Modify this to your desired range
+    console.log("range:", range);
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
     oAuth2Client.setCredentials({ access_token: userAuthToken });
     this.sheets = google.sheets({ version: "v4", auth: oAuth2Client });
