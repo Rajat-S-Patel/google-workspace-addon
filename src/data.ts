@@ -87,7 +87,7 @@ const welcomeCard = {
                     textInput: {
                       name: "spreadsheetId",
                       label: "SpreadSheet Id",
-                      defaultValue:"",
+                      value:"",
                       disabled:true,
                       type:"SINGLE_LINE"
                     },
@@ -189,7 +189,7 @@ const linkCard = {
 
 function getWelcomeCard(spreadSheetId: string) {
   const newCard = cloneDeep(welcomeCard);
-  newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].textInput.defaultValue = `${spreadSheetId}`;
+  newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].textInput.value = `${spreadSheetId}`;
   return newCard;
 }
 
