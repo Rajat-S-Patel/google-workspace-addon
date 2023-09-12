@@ -3,6 +3,8 @@ import { IWebSocket } from "../Websocket";
 const { v4: uuidv4 } = require("uuid");
 const { WebSocketService } = require("../Websocket");
 const { google } = require("googleapis");
+// import { google, sheets_v4 } from "googleapis";
+
 const {
   ACTIVE_COLUMNS_CHANGED,
   FETCH_CLIENT_POSITIONS,
@@ -10,7 +12,7 @@ const {
 
 export interface ISpreadSheetService {
   register(spreadSheetId: string, userAuthToken: string): void;
-  setConfigs(spreadsheetId: string, configs: SheetConfigs): void;
+  setConfigs(spreadsheetId: string,sheetId:string, configs: SheetConfigs): void;
 }
 export type AggFunc = [string, string];
 
@@ -58,25 +60,19 @@ export interface SheetConfigs {
 // const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
 const CLIENT_ID =
   "277891092538-1l88abaphnnhp97fj8id48dpvq528khi.apps.googleusercontent.com";
-const ACTIVE_COLUMNS = [
-  "login",
-  "symbol",
-  "subbroker",
-  "clientbalance",
-  "clientfloatingpl",
-  "clientplnet",
-  "companyplnet",
-];
+const GID = "0";
 class SpreadSheetService implements ISpreadSheetService {
   private mp: Set<string>;
   // private websocket: IWebSocket;
   private configMap: Map<string, SheetConfigs>;
   private websockets: Map<string, IWebSocket>;
-  private sheets;
+  private sheetApi: Map<string, any>;
+
   constructor() {
     this.mp = new Set<string>();
     this.websockets = new Map<string, IWebSocket>();
     this.configMap = new Map<string, SheetConfigs>();
+    this.sheetApi = new Map<string, any>();
   }
   register(spreadSheetId: string, userAuthToken: string): void {
     if (this.mp.has(spreadSheetId)) {
@@ -85,26 +81,8 @@ class SpreadSheetService implements ISpreadSheetService {
 
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
     oAuth2Client.setCredentials({ access_token: userAuthToken });
-    const sheets = google.sheets({ version: "v4", auth: oAuth2Client });
-    try {
-      sheets.spreadsheets
-        .get({
-          spreadsheetId:spreadSheetId,
-        })
-        .then((res) => {
-          const tabs = res.data.sheets.map((sheet) => {
-            return {
-              sheetId: sheet.properties.sheetId,
-              title: sheet.properties.title,
-            };
-          });
-
-          console.log("Tabs in the spreadsheet:");
-          console.log(tabs);
-        });
-    } catch (err) {
-      console.error("The API returned an error:", err);
-    }
+    const sheetApi = google.sheets({ version: "v4", auth: oAuth2Client });
+    this.sheetApi.set(spreadSheetId, sheetApi);
 
     this.mp.add(spreadSheetId);
     this.websockets.set(spreadSheetId, new WebSocketService());
@@ -112,13 +90,17 @@ class SpreadSheetService implements ISpreadSheetService {
     if (!websocket) return;
     websocket.connect(() => {
       websocket.register(spreadSheetId, (data: any) =>
-        this.sendData(data, spreadSheetId, userAuthToken)
+        this.sendData(data, spreadSheetId,userAuthToken)
       );
     });
   }
-  setConfigs(spreadSheetId: string, configs: SheetConfigs) {
+  setConfigs(spreadSheetId: string, sheetId:string, configs: SheetConfigs) {
     if (!this.mp.has(spreadSheetId)) return;
-
+    // TODO: get spreadsheet id and gid from the configs
+    // compute active columns per sheet and update the websocket
+    // single websocket per spreadsheet. every sheet inside the spreadsheet will share the same connection
+    // hence active columns will be common across the spreadsheet
+    
     this.configMap.set(spreadSheetId, configs);
     const websocket = this.websockets.get(spreadSheetId);
     if (!websocket) return;
@@ -130,17 +112,38 @@ class SpreadSheetService implements ISpreadSheetService {
     });
     // now reset subscription ...
   }
-  private sendData(data: any, spreadSheetId: string, userAuthToken: string) {
+  private async getAllSheets(spreadsheetId: string) {
+    const sheetApi = this.sheetApi.get(spreadsheetId);
+    if (!sheetApi) return Promise.reject();
+
+    try {
+      const res = await sheetApi.spreadsheets.get({
+        spreadsheetId,
+      });
+      const tabs = res.data.sheets.map((sheet) => {
+        return {
+          sheetId: sheet.properties.sheetId,
+          title: sheet.properties.title,
+        };
+      });
+      return Promise.resolve(tabs);
+    } catch (err) {
+      console.error("The API returned an error:", err);
+      return Promise.reject(err);
+    }
+  }
+  private sendData(data: any, spreadSheetId: string, userAuthToken:string) {
     const configs = this.configMap.get(spreadSheetId);
-    if (!configs) return;
-    console.log("data: ", data);
+    const sheetApi = this.sheetApi.get(spreadSheetId);
+    if (!configs || !sheetApi) return;
+    // TODO: get active columns for the spreadsheet and send updates to all the sheets inside the spreadsheet
+    // based on their active columns
+
     const range = `Sheet1!A1:${String.fromCharCode(
       65 + configs.visibleCols.length - 1
     )}${data.insert.length + 1}`; // Modify this to your desired range
     console.log("range:", range);
-    const oAuth2Client = new google.auth.OAuth2(CLIENT_ID);
-    oAuth2Client.setCredentials({ access_token: userAuthToken });
-    this.sheets = google.sheets({ version: "v4", auth: oAuth2Client });
+    
     const values = [configs.visibleCols];
     data.insert.forEach((row) => {
       values.push([]);
@@ -149,8 +152,11 @@ class SpreadSheetService implements ISpreadSheetService {
       });
     });
     // The data you want to write to the spreadsheet
-
-    this.sheets.spreadsheets.values.update(
+    sheetApi.spreadsheets.values.clear({
+      spreadsheetId: spreadSheetId,
+      range,
+    });
+    (sheetApi as any).spreadsheets.values.update(
       {
         spreadsheetId: spreadSheetId,
         range: range,

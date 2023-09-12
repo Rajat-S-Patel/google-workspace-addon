@@ -2,7 +2,7 @@ import { ISpreadSheetService } from "./services/SpreadSheetService";
 
 const express = require("express");
 const cors = require('cors');
-const { card, getWelcomeCard } = require("./data");
+const { card, getSheetIdCard, getWelcomeCard } = require("./data");
 const bodyParser = require("body-parser");
 const {
   getSpreadSheetServiceInstance,
@@ -39,9 +39,20 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
 
-  const subscriptionId = spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
+  spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
   return res.json(getWelcomeCard(spreadsheetId));
 });
+
+app.post("/submit-gid",(req,res) => {
+  const eventObject = req.body;
+  console.log("req-body: ", eventObject);
+  const sheetId =
+    eventObject.commonEventObject.formInputs.sheetId.stringInputs.value[0];
+  const spreadsheetId =
+    eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
+      .value[0];
+  return res.json(getSheetIdCard(spreadsheetId,sheetId));
+})
 
 app.post("/home", (req, res) => {
   res.json({
@@ -58,7 +69,7 @@ app.post("/home", (req, res) => {
 app.post('/configs',(req,res) => {
   const data = req.body;
   console.log("data: ",data);
-  spreadSheetService.setConfigs(data.spreadSheetId,data.configs);
+  spreadSheetService.setConfigs(data.spreadSheetId,data.sheetId,data.configs);
   res.send("Recieved configs");
 });
 
