@@ -88,7 +88,6 @@ const welcomeCard = {
                       name: "spreadsheetId",
                       label: "SpreadSheet Id",
                       value:"",
-                      disabled:true,
                       type:"SINGLE_LINE"
                     },
                   },
