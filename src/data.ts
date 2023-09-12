@@ -195,22 +195,8 @@ function getWelcomeCard(spreadSheetId: string) {
 function getSheetIdCard(spreadSheetId: string, sheetId: string) {
   const newCard = cloneDeep(linkCard);
   const orekaUrl = process.env.OREKA_URL;
-  newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets.push(
-    {
-      buttonList: {
-        buttons: [
-          {
-            text: "Click to Configure",
-            onClick: {
-              openLink: {
-                url: `${orekaUrl}/addon-configure/${spreadSheetId}?sheetId=${sheetId}`,
-              },
-            },
-          },
-        ],
-      },
-    }
-  );
+  newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].buttonList.buttons[0].onClick.openLink.url = `${orekaUrl}/addon-configure/${spreadSheetId}?sheetId=${sheetId}`;
+  
   return newCard;
 }
 
