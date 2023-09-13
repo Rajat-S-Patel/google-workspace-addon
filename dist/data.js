@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSheetIdCard = exports.getWelcomeCard = exports.card = void 0;
-const { cloneDeep } = require("lodash");
-require("dotenv").config();
+const lodash_1 = require("lodash");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const CLIENT_URL = process.env.CLIENT_URL;
 const card = {
     header: {
@@ -91,7 +95,7 @@ const welcomeCard = {
                                             name: "spreadsheetId",
                                             label: "SpreadSheet Id",
                                             value: "",
-                                            type: "SINGLE_LINE"
+                                            type: "SINGLE_LINE",
                                         },
                                     },
                                     {
@@ -186,16 +190,15 @@ const linkCard = {
     stateChanged: true,
 };
 function getWelcomeCard(spreadSheetId) {
-    const newCard = cloneDeep(welcomeCard);
+    const newCard = (0, lodash_1.cloneDeep)(welcomeCard);
     newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].textInput.value = `${spreadSheetId}`;
     return newCard;
 }
 exports.getWelcomeCard = getWelcomeCard;
 function getSheetIdCard(spreadSheetId, sheetId) {
-    const newCard = cloneDeep(linkCard);
+    const newCard = (0, lodash_1.cloneDeep)(linkCard);
     const orekaUrl = process.env.OREKA_URL;
     newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].buttonList.buttons[0].onClick.openLink.url = `${orekaUrl}/addon-configure/${spreadSheetId}?sheetId=${sheetId}`;
     return newCard;
 }
 exports.getSheetIdCard = getSheetIdCard;
-module.exports = { card, getWelcomeCard, getSheetIdCard };

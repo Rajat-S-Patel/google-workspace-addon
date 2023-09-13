@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const { WebSocketService } = require("../Websocket");
+exports.getSpreadSheetServiceInstance = exports.SpreadSheetService = void 0;
+const Websocket_1 = require("../Websocket");
 const googleapis_1 = require("googleapis");
-const { ACTIVE_COLUMNS_CHANGED, FETCH_CLIENT_POSITIONS, } = require("./constants");
+const constants_1 = require("./constants");
 // const API_KEY = "AIzaSyD9WUQouDmtP7Et4AqTJmTX2qV4F0yJzNU";
 const CLIENT_ID = "277891092538-1l88abaphnnhp97fj8id48dpvq528khi.apps.googleusercontent.com";
 const GID = "0";
@@ -31,7 +32,7 @@ class SpreadSheetService {
         const sheetApi = googleapis_1.google.sheets({ version: "v4", auth: oAuth2Client });
         this.sheetApi.set(spreadSheetId, sheetApi);
         this.mp.add(spreadSheetId);
-        this.websockets.set(spreadSheetId, new WebSocketService());
+        this.websockets.set(spreadSheetId, new Websocket_1.WebSocketService());
         const websocket = this.websockets.get(spreadSheetId);
         if (!websocket)
             return;
@@ -51,8 +52,8 @@ class SpreadSheetService {
         if (!websocket)
             return;
         websocket.sendMessage({
-            type: ACTIVE_COLUMNS_CHANGED,
-            requestType: FETCH_CLIENT_POSITIONS,
+            type: constants_1.ACTIVE_COLUMNS_CHANGED,
+            requestType: constants_1.FETCH_CLIENT_POSITIONS,
             columns: configs.visibleCols,
             loginUser: "1001",
         });
@@ -117,10 +118,11 @@ class SpreadSheetService {
         });
     }
 }
+exports.SpreadSheetService = SpreadSheetService;
 let spreadSheetServiceInstance = null;
 const getSpreadSheetServiceInstance = () => {
     if (spreadSheetServiceInstance === null)
         spreadSheetServiceInstance = new SpreadSheetService();
     return spreadSheetServiceInstance;
 };
-module.exports = { SpreadSheetService, getSpreadSheetServiceInstance };
+exports.getSpreadSheetServiceInstance = getSpreadSheetServiceInstance;

@@ -1,5 +1,8 @@
-const { cloneDeep } = require("lodash");
-require("dotenv").config();
+import { cloneDeep } from "lodash";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const CLIENT_URL = process.env.CLIENT_URL;
 const card = {
   header: {
@@ -87,8 +90,8 @@ const welcomeCard = {
                     textInput: {
                       name: "spreadsheetId",
                       label: "SpreadSheet Id",
-                      value:"",
-                      type:"SINGLE_LINE"
+                      value: "",
+                      type: "SINGLE_LINE",
                     },
                   },
                   {
@@ -104,8 +107,7 @@ const welcomeCard = {
                           text: "Submit",
                           onClick: {
                             action: {
-                              function:
-                                `${CLIENT_URL}/submit-gid`,
+                              function: `${CLIENT_URL}/submit-gid`,
                             },
                           },
                         },
@@ -185,7 +187,6 @@ const linkCard = {
   stateChanged: true,
 };
 
-
 function getWelcomeCard(spreadSheetId: string) {
   const newCard = cloneDeep(welcomeCard);
   newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].textInput.value = `${spreadSheetId}`;
@@ -196,9 +197,8 @@ function getSheetIdCard(spreadSheetId: string, sheetId: string) {
   const newCard = cloneDeep(linkCard);
   const orekaUrl = process.env.OREKA_URL;
   newCard.renderActions.action.navigations[0].pushCard.sections[0].widgets[1].buttonList.buttons[0].onClick.openLink.url = `${orekaUrl}/addon-configure/${spreadSheetId}?sheetId=${sheetId}`;
-  
+
   return newCard;
 }
 
-module.exports = { card, getWelcomeCard, getSheetIdCard };
 export { card, getWelcomeCard, getSheetIdCard };

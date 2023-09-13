@@ -1,5 +1,4 @@
-const LZString = require('lz-string');
-
+import  LZString from "lz-string";
 export interface IMessageEncryptDecrypter {
     decrypt: (message: string) => string;
     encrypt: (message: Map<string, any>) => string;
@@ -30,4 +29,4 @@ function mapToObj(map: Map<string, any>) {
     return obj
 }
 
-module.exports = MessageDecrypter;
+export default MessageDecrypter;

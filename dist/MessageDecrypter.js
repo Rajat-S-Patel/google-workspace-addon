@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const LZString = require('lz-string');
+const lz_string_1 = __importDefault(require("lz-string"));
 class MessageDecrypter {
     decrypt(message) {
-        var result = LZString.decompressFromUTF16(message);
+        var result = lz_string_1.default.decompressFromUTF16(message);
         if (result != undefined)
             return JSON.parse(result);
         return undefined;
@@ -24,4 +27,4 @@ function mapToObj(map) {
         obj[k] = v;
     return obj;
 }
-module.exports = MessageDecrypter;
+exports.default = MessageDecrypter;

@@ -1,16 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require("express");
-const cors = require('cors');
-const { card, getSheetIdCard, getWelcomeCard } = require("./data");
-const bodyParser = require("body-parser");
-const { getSpreadSheetServiceInstance, } = require("./services/SpreadSheetService");
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static("public"));
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const data_1 = require("./data");
+const body_parser_1 = __importDefault(require("body-parser"));
+const SpreadSheetService_1 = require("./services/SpreadSheetService");
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use(body_parser_1.default.json());
+app.use(express_1.default.static("public"));
 const PORT = process.env.PORT || 3000;
-const spreadSheetService = getSpreadSheetServiceInstance();
+const spreadSheetService = (0, SpreadSheetService_1.getSpreadSheetServiceInstance)();
 app.get("/", (req, res) => {
     console.log("root called");
     res.send("Hello World!");
@@ -28,7 +31,7 @@ app.post("/signIn", (req, res) => {
     const spreadsheetId = eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
         .value[0];
     spreadSheetService.register(spreadsheetId, eventObject.authorizationEventObject.userOAuthToken);
-    return res.json(getWelcomeCard(spreadsheetId));
+    return res.json((0, data_1.getWelcomeCard)(spreadsheetId));
 });
 app.post("/submit-gid", (req, res) => {
     const eventObject = req.body;
@@ -36,14 +39,14 @@ app.post("/submit-gid", (req, res) => {
     const sheetId = eventObject.commonEventObject.formInputs.sheetId.stringInputs.value[0];
     const spreadsheetId = eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
         .value[0];
-    return res.json(getSheetIdCard(spreadsheetId, sheetId));
+    return res.json((0, data_1.getSheetIdCard)(spreadsheetId, sheetId));
 });
 app.post("/home", (req, res) => {
     res.json({
         action: {
             navigations: [
                 {
-                    pushCard: card,
+                    pushCard: data_1.card,
                 },
             ],
         },

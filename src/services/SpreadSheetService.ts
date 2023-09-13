@@ -1,14 +1,8 @@
 import { sheets_v4 } from "googleapis";
 import { IWebSocket } from "../Websocket";
-
-
-const { WebSocketService } = require("../Websocket");
+import { WebSocketService } from "../Websocket";
 import {google} from 'googleapis';
-
-const {
-  ACTIVE_COLUMNS_CHANGED,
-  FETCH_CLIENT_POSITIONS,
-} = require("./constants");
+import { ACTIVE_COLUMNS_CHANGED,FETCH_CLIENT_POSITIONS } from "./constants";
 
 export interface ISpreadSheetService {
   register(spreadSheetId: string, userAuthToken: string): void;
@@ -181,4 +175,4 @@ const getSpreadSheetServiceInstance = () => {
   return spreadSheetServiceInstance;
 };
 
-module.exports = { SpreadSheetService, getSpreadSheetServiceInstance };
+export { SpreadSheetService, getSpreadSheetServiceInstance};

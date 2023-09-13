@@ -1,10 +1,10 @@
 import { IMessageEncryptDecrypter } from "./MessageDecrypter";
-
-const { WebSocket } = require("ws");
-const MessageDecrypter = require("./MessageDecrypter");
+import { WebSocket } from "ws";
+import MessageDecrypter from "./MessageDecrypter";
 
 export type DataCallBack = (data: any) => void;
 export type onConnect = () => void;
+
 export interface IWebSocket {
   connect: (cb:onConnect) => void;
   listen: () => void;
@@ -84,5 +84,4 @@ class WebSocketService implements IWebSocket {
   }
 }
 
-module.exports = { WebSocketService };
 export { WebSocketService };

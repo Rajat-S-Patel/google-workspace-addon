@@ -1,16 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebSocketService = void 0;
-const { WebSocket } = require("ws");
-const MessageDecrypter = require("./MessageDecrypter");
+const ws_1 = require("ws");
+const MessageDecrypter_1 = __importDefault(require("./MessageDecrypter"));
 class WebSocketService {
     constructor() {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        this.messageDecrypter = new MessageDecrypter();
+        this.messageDecrypter = new MessageDecrypter_1.default();
         this.cbMap = new Map();
     }
     connect(cb) {
-        this.websocket = new WebSocket("wss://auttrading.com:90", {
+        this.websocket = new ws_1.WebSocket("wss://auttrading.com:90", {
             perMessageDeflate: false,
         });
         this.websocket.on("error", console.error);
@@ -70,4 +73,3 @@ class WebSocketService {
     }
 }
 exports.WebSocketService = WebSocketService;
-module.exports = { WebSocketService };

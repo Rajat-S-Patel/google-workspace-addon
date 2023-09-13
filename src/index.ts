@@ -1,12 +1,9 @@
 import { ISpreadSheetService } from "./services/SpreadSheetService";
-
-const express = require("express");
-const cors = require('cors');
-const { card, getSheetIdCard, getWelcomeCard } = require("./data");
-const bodyParser = require("body-parser");
-const {
-  getSpreadSheetServiceInstance,
-} = require("./services/SpreadSheetService");
+import express from "express";
+import cors from "cors";
+import { card, getSheetIdCard, getWelcomeCard } from "./data";
+import bodyParser from "body-parser";
+import { getSpreadSheetServiceInstance } from "./services/SpreadSheetService";
 
 const app = express();
 
