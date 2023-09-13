@@ -1,9 +1,9 @@
+import { sheets_v4 } from "googleapis";
 import { IWebSocket } from "../Websocket";
 
-const { v4: uuidv4 } = require("uuid");
+
 const { WebSocketService } = require("../Websocket");
-const { google } = require("googleapis");
-// import { google, sheets_v4 } from "googleapis";
+import {google} from 'googleapis';
 
 const {
   ACTIVE_COLUMNS_CHANGED,
@@ -66,13 +66,13 @@ class SpreadSheetService implements ISpreadSheetService {
   // private websocket: IWebSocket;
   private configMap: Map<string, SheetConfigs>;
   private websockets: Map<string, IWebSocket>;
-  private sheetApi: Map<string, any>;
+  private sheetApi: Map<string, sheets_v4.Sheets>;
 
   constructor() {
     this.mp = new Set<string>();
     this.websockets = new Map<string, IWebSocket>();
     this.configMap = new Map<string, SheetConfigs>();
-    this.sheetApi = new Map<string, any>();
+    this.sheetApi = new Map<string, sheets_v4.Sheets>();
   }
   register(spreadSheetId: string, userAuthToken: string): void {
     if (this.mp.has(spreadSheetId)) {
