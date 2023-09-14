@@ -173,6 +173,7 @@ class SpreadSheetService implements ISpreadSheetService {
     }
   }
   private writeData(data:any,spreadsheetId:string,sheetId:number):void {
+    console.log("writeData: ",data);
     const configs = this.configMap.get(spreadsheetId);
     const sheetApi = this.sheetApi.get(spreadsheetId);
     const spreadSheetMetaData = this.sheetMetaDataMap.get(spreadsheetId);

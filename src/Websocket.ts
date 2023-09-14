@@ -23,7 +23,7 @@ export interface IWebSocket {
   ) => void;
   sendMessage: (message: any) => void;
   register: (spreadSheetId: string, cb: DataCallBack) => void;
-  isSubscribed:(dataSouceId:string) => boolean;
+  isSubscribed: (dataSouceId: string) => boolean;
 }
 const WEBSOCKET_URL = process.env.WEBSOCKET_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -82,7 +82,14 @@ class WebSocketService implements IWebSocket {
     // });
   }
   onMessage(data: RawData, isBinary: boolean) {
-    console.log("data:", data);
+    const decryptedMessage: any = this.messageDecrypter.decrypt(
+      data.toString()
+    );
+    if(decryptedMessage.insert) {
+      const callback = this.cbMap.get("client-position-live");
+      console.log("message: ",decryptedMessage);
+      if(callback) callback(decryptedMessage);
+    }
   }
   connect(cb: onConnect) {
     // this.websocket = new WebSocket("wss://auttrading.com:90", {
@@ -133,7 +140,7 @@ class WebSocketService implements IWebSocket {
     if (callback) return;
     this.cbMap.set(dataSourceId, cb);
   }
-  isSubscribed(dataSourceId:string):boolean {
+  isSubscribed(dataSourceId: string): boolean {
     return this.cbMap.has(dataSourceId);
   }
   updateSubscription(
