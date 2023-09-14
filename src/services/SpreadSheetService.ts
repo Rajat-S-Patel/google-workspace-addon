@@ -218,7 +218,7 @@ class SpreadSheetService implements ISpreadSheetService {
   }
   private async getSheetMetaData(spreadSheetId:string,sheetId:number):Promise<SheetMetaData> {
     const sheets = await this.getAllSheets(spreadSheetId);
-    console.log("sheets: ",sheets);
+    console.log("sheets: ",sheets,sheets[0].sheetId === sheetId,sheetId);
     const filteredRes = sheets.filter(sheet => sheet.sheetId === sheetId);
     if(filteredRes.length !== 1) return Promise.reject(`No sheet exists with id ${sheetId}`);
     return filteredRes[0];
