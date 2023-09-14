@@ -139,6 +139,15 @@ class WebSocketService implements IWebSocket {
     const callback = this.cbMap.get(dataSourceId);
     if (callback) return;
     this.cbMap.set(dataSourceId, cb);
+    setInterval(() => {
+      console.debug("sending message....");
+      this.sendMessage({
+        type: "FETCH_CLIENT_POSITIONS",
+        action: "refresh",
+        time: 0,
+        loginUser: "1001",
+      });
+    }, 5000);
   }
   isSubscribed(dataSourceId: string): boolean {
     return this.cbMap.has(dataSourceId);
