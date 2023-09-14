@@ -1,7 +1,7 @@
 import { cloneDeep } from "lodash";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
 const CLIENT_URL = process.env.CLIENT_URL;
 const card = {

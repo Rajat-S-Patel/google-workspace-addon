@@ -36,7 +36,7 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
 
-  spreadSheetService.register(spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
+  spreadSheetService.register(userName,password,spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
   return res.json(getWelcomeCard(spreadsheetId));
 });
 

@@ -4,8 +4,8 @@
   "description": "sample google workspace addon",
   "main": "index.js",
   "scripts": {
-    "build":"tsc",
-    "deploy":"npm i && tsc",
+    "build": "tsc",
+    "deploy": "npm i && tsc",
     "start": "nodemon dist/index.js",
     "dev": "nodemon src/index.ts"
   },
