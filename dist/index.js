@@ -55,7 +55,7 @@ app.post("/home", (req, res) => {
 app.post('/configs', (req, res) => {
     const data = req.body;
     console.log("data: ", data);
-    spreadSheetService.setConfigs(data.spreadSheetId, data.sheetId, data.configs);
+    spreadSheetService.setConfigs(data.spreadSheetId, Number(data.sheetId), data.configs);
     res.send("Recieved configs");
 });
 app.listen(PORT, () => {
