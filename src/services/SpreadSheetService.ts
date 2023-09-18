@@ -128,14 +128,14 @@ class SpreadSheetService implements ISpreadSheetService {
     if (!sheetMetaData) {
       // if sheet meta data doesn't exist then fetch it using API request
       try {
-        // const sheetMetaData = await this.getSheetMetaData(
-        //   spreadSheetId,
-        //   sheetId
-        // );
-        const sheetMetaData: SheetMetaData = {
-          sheetId,
-          sheetName: "Sheet1",
-        };
+        const sheetMetaData = await this.getSheetMetaData(
+          spreadSheetId,
+          sheetId
+        );
+        // const sheetMetaData: SheetMetaData = {
+        //   sheetId,
+        //   sheetName: "Sheet1",
+        // };
         sheetsMetaData.set(sheetId, sheetMetaData);
       } catch (err) {
         console.error("error:", err);
