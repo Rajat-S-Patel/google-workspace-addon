@@ -1,6 +1,7 @@
 import { sheets_v4 } from "googleapis";
 import { IWebSocket } from "../Websocket";
 import { WebSocketService } from "../Websocket";
+import { getDataServiceInstance } from "./DataService";
 import { google } from "googleapis";
 import { ACTIVE_COLUMNS_CHANGED, FETCH_CLIENT_POSITIONS } from "./constants";
 import { config } from "dotenv";
@@ -70,6 +71,7 @@ export type SheetMetaData = {
 };
 
 const CLIENT_ID = process.env.CLIENT_ID;
+const dataServiceInstance = getDataServiceInstance();
 class SpreadSheetService implements ISpreadSheetService {
   private mp: Set<string>;
   // private websocket: IWebSocket;
@@ -107,13 +109,6 @@ class SpreadSheetService implements ISpreadSheetService {
       new WebSocketService(userName, password)
     );
     this.sheetMetaDataMap.set(spreadSheetId, new Map<number, SheetMetaData>());
-    // const websocket = this.websockets.get(spreadSheetId);
-    // if (!websocket) return;
-    // websocket.connect(() => {
-    //   websocket.register(spreadSheetId, (data: any) =>
-    //     this.sendData(data, spreadSheetId, userAuthToken)
-    //   );
-    // });
   }
   async setConfigs(
     spreadSheetId: string,
@@ -137,6 +132,10 @@ class SpreadSheetService implements ISpreadSheetService {
           spreadSheetId,
           sheetId
         );
+        // const sheetMetaData: SheetMetaData = {
+        //   sheetId,
+        //   sheetName: "Sheet1",
+        // };
         sheetsMetaData.set(sheetId, sheetMetaData);
       } catch (err) {
         console.error("error:", err);
@@ -173,12 +172,6 @@ class SpreadSheetService implements ISpreadSheetService {
         []
       );
     }
-    // websocket.sendMessage({
-    //   type: ACTIVE_COLUMNS_CHANGED,
-    //   requestType: FETCH_CLIENT_POSITIONS,
-    //   columns: configs.visibleCols,
-    //   loginUser: "1001",
-    // });
     // now reset subscription ...
   }
   private async getAllSheets(spreadsheetId: string) {
@@ -206,7 +199,6 @@ class SpreadSheetService implements ISpreadSheetService {
     spreadsheetId: string,
     dataSouceId: string
   ): void {
-    console.log("writeData: ", data);
     const configs = this.configMap.get(spreadsheetId);
     // single spreadSheet have multiple sheets
     // multiple datasource for single spreadsheet
@@ -218,13 +210,17 @@ class SpreadSheetService implements ISpreadSheetService {
     spreadSheetMetaData.forEach((sheet, sheetId) => {
       const sheetConfig = configs[sheetId];
       if (!sheetConfig || sheetConfig.dataSourceId !== dataSouceId) return;
-      this.sendData(sheet, sheetConfig, data, spreadsheetId);
-    });
+      dataServiceInstance
+        .process(sheetConfig, data.insert)
+        .then((transformedData: any[]) => {
+          this.sendData(sheet, sheetConfig, transformedData, spreadsheetId);
+        });
+      });
   }
   private sendData(
     sheet: SheetMetaData,
     sheetConfig: SheetConfigs,
-    data: any,
+    data: any[],
     spreadsheetId: string
   ) {
     const sheetApi = this.sheetApi.get(spreadsheetId);
@@ -232,16 +228,15 @@ class SpreadSheetService implements ISpreadSheetService {
 
     const range = `${sheet.sheetName}!A1:${String.fromCharCode(
       65 + sheetConfig.visibleCols.length - 1
-    )}${data.insert.length + 1}`;
+    )}${data.length + 1}`;
 
     const values = [sheetConfig.visibleCols];
-    data.insert.forEach((row) => {
+    data.forEach((row) => {
       values.push([]);
       sheetConfig.visibleCols.forEach((col) => {
         values[values.length - 1].push(row[col] ?? "");
       });
     });
-
     (sheetApi as any).spreadsheets.values.update(
       {
         spreadsheetId,

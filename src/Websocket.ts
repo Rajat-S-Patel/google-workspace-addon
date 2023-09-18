@@ -10,10 +10,8 @@ import {
 config();
 
 export type DataCallBack = (data: any) => void;
-export type onConnect = () => void;
 
 export interface IWebSocket {
-  connect: (cb: onConnect) => void;
   listen: () => void;
   subscribe: (dataSourceId: string, cb: DataCallBack) => void;
   updateSubscription: (
@@ -87,35 +85,10 @@ class WebSocketService implements IWebSocket {
     );
     if(decryptedMessage.insert) {
       const callback = this.cbMap.get("client-position-live");
-      console.log("message: ",decryptedMessage);
       if(callback) callback(decryptedMessage);
     }
   }
-  connect(cb: onConnect) {
-    // this.websocket = new WebSocket("wss://auttrading.com:90", {
-    //   perMessageDeflate: false,
-    // });
-    // this.websocket.on("error", console.error);
-    // this.websocket.on("open", (message: string) => {
-    //   cb(); // execute onConnect callBack ...
-    //   this.sendMessage({
-    //     type: "login",
-    //     login: "1001",
-    //     pwd: "hello12345",
-    //     serialNo: "fcd4fe32919aa9d64b69703004fa3a0d",
-    //   });
-    // });
-    // this.websocket.on("message", (message: any) => {
-    //   const decryptedMessage: any = this.messageDecrypter.decrypt(
-    //     message.toString()
-    //   );
-    //   if (decryptedMessage.insert) {
-    //     this.cbMap.forEach((cb, sheetId) => {
-    //       cb(decryptedMessage);
-    //     });
-    //   }
-    // });
-  }
+
   listen() {}
   sendMessage(message: any): void {
     console.log("sending message:", message);
