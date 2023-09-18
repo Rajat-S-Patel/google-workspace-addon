@@ -30,7 +30,7 @@ app.post("/signIn", (req, res) => {
     const password = eventObject.commonEventObject.formInputs.password.stringInputs.value[0];
     const spreadsheetId = eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
         .value[0];
-    spreadSheetService.register(spreadsheetId, eventObject.authorizationEventObject.userOAuthToken);
+    spreadSheetService.register(userName, password, spreadsheetId, eventObject.authorizationEventObject.userOAuthToken);
     return res.json((0, data_1.getWelcomeCard)(spreadsheetId));
 });
 app.post("/submit-gid", (req, res) => {

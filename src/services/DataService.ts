@@ -8,7 +8,7 @@ export interface IDataService {
 class DataService implements IDataService  {
     private pool:WorkerPool;
     constructor() {
-      this.pool = workerpool.pool(__dirname+"/worker/DataWorker.ts",  {
+      this.pool = workerpool.pool(__dirname+"/worker/DataWorker.js",  {
         workerType: 'thread',
         maxWorkers:50,
         onCreateWorker:() => console.log("worker created..."),

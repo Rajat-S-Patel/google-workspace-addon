@@ -1,12 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSheetIdCard = exports.getWelcomeCard = exports.card = void 0;
 const lodash_1 = require("lodash");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)();
 const CLIENT_URL = process.env.CLIENT_URL;
 const card = {
     header: {
