@@ -224,16 +224,20 @@ class SpreadSheetService implements ISpreadSheetService {
     spreadsheetId: string
   ) {
     const sheetApi = this.sheetApi.get(spreadsheetId);
-    if (!sheetApi) return;
+    if (!sheetApi || data.length === 0) return;
 
     const range = `${sheet.sheetName}!A1:${String.fromCharCode(
       65 + sheetConfig.visibleCols.length - 1
     )}${data.length + 1}`;
-
-    const values = [sheetConfig.visibleCols];
+    const visibleCols = new Set<string>(sheetConfig.visibleCols);
+    const headerCols = [];
+    Object.keys(data[0]).forEach(key => {
+      if(visibleCols.has(key)) headerCols.push(key);
+    })
+    const values = [headerCols];
     data.forEach((row) => {
       values.push([]);
-      sheetConfig.visibleCols.forEach((col) => {
+      headerCols.forEach((col) => {
         values[values.length - 1].push(row[col] ?? "");
       });
     });
