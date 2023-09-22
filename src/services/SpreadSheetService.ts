@@ -3,8 +3,9 @@ import { IWebSocket } from "../Websocket";
 import { WebSocketService } from "../Websocket";
 import { getDataServiceInstance } from "./DataService";
 import { google } from "googleapis";
-import { ACTIVE_COLUMNS_CHANGED, FETCH_CLIENT_POSITIONS } from "./constants";
+import A1 from '@flighter/a1-notation';
 import { config } from "dotenv";
+
 config();
 export interface ISpreadSheetService {
   register(
@@ -225,10 +226,9 @@ class SpreadSheetService implements ISpreadSheetService {
   ) {
     const sheetApi = this.sheetApi.get(spreadsheetId);
     if (!sheetApi || data.length === 0) return;
+    const colLen = A1.toCol(sheetConfig.visibleCols.length);
 
-    const range = `${sheet.sheetName}!A1:${String.fromCharCode(
-      65 + sheetConfig.visibleCols.length - 1
-    )}${data.length + 1}`;
+    const range = `${sheet.sheetName}!A1:${colLen}${data.length + 1}`;
     const visibleCols = new Set<string>(sheetConfig.visibleCols);
     const headerCols = [];
     Object.keys(data[0]).forEach(key => {

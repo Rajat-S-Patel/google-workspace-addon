@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSpreadSheetServiceInstance = exports.SpreadSheetService = void 0;
 const Websocket_1 = require("../Websocket");
 const DataService_1 = require("./DataService");
 const googleapis_1 = require("googleapis");
+const a1_notation_1 = __importDefault(require("@flighter/a1-notation"));
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -137,13 +141,21 @@ class SpreadSheetService {
     }
     sendData(sheet, sheetConfig, data, spreadsheetId) {
         const sheetApi = this.sheetApi.get(spreadsheetId);
-        if (!sheetApi)
+        if (!sheetApi || data.length === 0)
             return;
-        const range = `${sheet.sheetName}!A1:${String.fromCharCode(65 + sheetConfig.visibleCols.length - 1)}${data.length + 1}`;
-        const values = [sheetConfig.visibleCols];
+        const colLen = a1_notation_1.default.toCol(sheetConfig.visibleCols.length);
+        const range = `${sheet.sheetName}!A1:${colLen}${data.length + 1}`;
+        console.log("range: ", range);
+        const visibleCols = new Set(sheetConfig.visibleCols);
+        const headerCols = [];
+        Object.keys(data[0]).forEach(key => {
+            if (visibleCols.has(key))
+                headerCols.push(key);
+        });
+        const values = [headerCols];
         data.forEach((row) => {
             values.push([]);
-            sheetConfig.visibleCols.forEach((col) => {
+            headerCols.forEach((col) => {
                 var _a;
                 values[values.length - 1].push((_a = row[col]) !== null && _a !== void 0 ? _a : "");
             });
