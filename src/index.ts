@@ -23,7 +23,10 @@ app.get("/home", (req, res) => {
   console.log("home called");
   res.send("Home called");
 });
-
+app.post("/client-signin",(req,res) => {
+  console.log("signIn called: ",req.body);
+  return res.send("success");
+})
 app.post("/signIn", (req, res) => {
   console.log("signIn called");
   const eventObject = req.body;
