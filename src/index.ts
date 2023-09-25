@@ -23,10 +23,13 @@ app.get("/home", (req, res) => {
   console.log("home called");
   res.send("Home called");
 });
-app.post("/client-signin",(req,res) => {
-  console.log("signIn called: ",req.body);
-  return res.send("success");
-})
+app.post("/client-signin", (req, res) => {
+  console.log("signIn called: ", req.body);
+  // verify credentials and send the auth token back to client
+  const { userName, password, spreadsheetId, oauthToken } = req.body;
+  spreadSheetService.register(userName,password,spreadsheetId,oauthToken);
+  return res.status(200).end();
+});
 app.post("/signIn", (req, res) => {
   console.log("signIn called");
   const eventObject = req.body;
@@ -39,11 +42,16 @@ app.post("/signIn", (req, res) => {
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
 
-  spreadSheetService.register(userName,password,spreadsheetId,eventObject.authorizationEventObject.userOAuthToken);
+  spreadSheetService.register(
+    userName,
+    password,
+    spreadsheetId,
+    eventObject.authorizationEventObject.userOAuthToken
+  );
   return res.json(getWelcomeCard(spreadsheetId));
 });
 
-app.post("/submit-gid",(req,res) => {
+app.post("/submit-gid", (req, res) => {
   const eventObject = req.body;
   console.log("req-body: ", eventObject);
   const sheetId =
@@ -51,8 +59,8 @@ app.post("/submit-gid",(req,res) => {
   const spreadsheetId =
     eventObject.commonEventObject.formInputs.spreadsheetId.stringInputs
       .value[0];
-  return res.json(getSheetIdCard(spreadsheetId,sheetId));
-})
+  return res.json(getSheetIdCard(spreadsheetId, sheetId));
+});
 
 app.post("/home", (req, res) => {
   res.json({
@@ -66,10 +74,14 @@ app.post("/home", (req, res) => {
   });
 });
 
-app.post('/configs',(req,res) => {
+app.post("/configs", (req, res) => {
   const data = req.body;
-  console.log("data: ",data);
-  spreadSheetService.setConfigs(data.spreadSheetId,Number(data.sheetId),data.configs);
+  console.log("data: ", data);
+  spreadSheetService.setConfigs(
+    data.spreadSheetId,
+    Number(data.sheetId),
+    data.configs
+  );
   res.send("Recieved configs");
 });
 
