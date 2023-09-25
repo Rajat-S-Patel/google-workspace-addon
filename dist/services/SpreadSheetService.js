@@ -59,14 +59,11 @@ class SpreadSheetService {
             if (!sheetMetaData) {
                 // if sheet meta data doesn't exist then fetch it using API request
                 try {
-                    // const sheetMetaData = await this.getSheetMetaData(
-                    //   spreadSheetId,
-                    //   sheetId
-                    // );
-                    const sheetMetaData = {
-                        sheetId,
-                        sheetName: "Sheet1",
-                    };
+                    const sheetMetaData = yield this.getSheetMetaData(spreadSheetId, sheetId);
+                    // const sheetMetaData: SheetMetaData = {
+                    //   sheetId,
+                    //   sheetName: "Sheet1",
+                    // };
                     sheetsMetaData.set(sheetId, sheetMetaData);
                 }
                 catch (err) {
@@ -145,7 +142,6 @@ class SpreadSheetService {
             return;
         const colLen = a1_notation_1.default.toCol(sheetConfig.visibleCols.length);
         const range = `${sheet.sheetName}!A1:${colLen}${data.length + 1}`;
-        console.log("range: ", range);
         const visibleCols = new Set(sheetConfig.visibleCols);
         const headerCols = [];
         Object.keys(data[0]).forEach(key => {

@@ -8,7 +8,7 @@ const card = {
   header: {
     title: "Oreka RMS",
     subtitle: "Spreadsheet Data",
-    imageUrl: "https://google-workspace-addon.onrender.com/oreka-logo-50.png",
+    imageUrl: `${CLIENT_URL}/oreka-logo-50.png`,
     imageType: "SQUARE",
     imageAltText: "Oreka-Logo",
   },
@@ -47,7 +47,7 @@ const card = {
                 onClick: {
                   action: {
                     function:
-                      "https://google-workspace-addon.onrender.com/signIn",
+                      `${CLIENT_URL}/signIn`,
                   },
                 },
               },
