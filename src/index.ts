@@ -27,7 +27,7 @@ app.post("/client-signin", (req, res) => {
   console.log("signIn called: ", req.body);
   // verify credentials and send the auth token back to client
   const { userName, password, spreadsheetId, oauthToken } = req.body;
-  spreadSheetService.register(userName,password,spreadsheetId,oauthToken);
+  spreadSheetService.register(userName, password, spreadsheetId, oauthToken);
   return res.status(200).end();
 });
 app.post("/signIn", (req, res) => {
@@ -82,9 +82,16 @@ app.post("/configs", (req, res) => {
     Number(data.sheetId),
     data.configs
   );
-  res.send("Recieved configs");
+  const formula = spreadSheetService.getFormulaFromConfigs(data.configs);
+  res.json({ formula });
 });
-
+app.post("/fetch-data", (req, res) => {
+  const { configs,spreadsheetId,activeSheetId } = req.body;
+  console.log("req.body: ",req.body);
+  // now parse the configs and write data
+  spreadSheetService.setConfigsFromFormula(spreadsheetId,activeSheetId,configs);
+  return res.end();
+});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });

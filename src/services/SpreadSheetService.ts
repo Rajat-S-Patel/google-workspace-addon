@@ -3,7 +3,7 @@ import { IWebSocket } from "../Websocket";
 import { WebSocketService } from "../Websocket";
 import { getDataServiceInstance } from "./DataService";
 import { google } from "googleapis";
-import A1 from '@flighter/a1-notation';
+import A1 from "@flighter/a1-notation";
 import { config } from "dotenv";
 
 config();
@@ -18,6 +18,12 @@ export interface ISpreadSheetService {
     spreadsheetId: string,
     sheetId: number,
     configs: SheetConfigs
+  ): Promise<void>;
+  getFormulaFromConfigs(configs: SheetConfigs): string;
+  setConfigsFromFormula(
+    spreadsheetId: string,
+    sheetId: number,
+    configs: FormulaConfigs
   ): Promise<void>;
 }
 export type AggFunc = [string, string];
@@ -52,6 +58,15 @@ export type FilterType =
   | "ends with"
   | "contains"
   | "not contains";
+export interface FormulaConfigs {
+  visibleCols: string;
+  functionCols: string;
+  groupBy: string;
+  splitBy: string;
+  orderBy: string;
+  filterBy: string;
+  dataSourceId: string;
+}
 
 export interface SheetConfigs {
   id: string;
@@ -110,6 +125,9 @@ class SpreadSheetService implements ISpreadSheetService {
       new WebSocketService(userName, password)
     );
     this.sheetMetaDataMap.set(spreadSheetId, new Map<number, SheetMetaData>());
+  }
+  getFormulaFromConfigs(configs: SheetConfigs): string {
+    return "SUM(GROUP(1,2,3))";
   }
   async setConfigs(
     spreadSheetId: string,
@@ -216,7 +234,7 @@ class SpreadSheetService implements ISpreadSheetService {
         .then((transformedData: any[]) => {
           this.sendData(sheet, sheetConfig, transformedData, spreadsheetId);
         });
-      });
+    });
   }
   private sendData(
     sheet: SheetMetaData,
@@ -231,9 +249,9 @@ class SpreadSheetService implements ISpreadSheetService {
     const range = `${sheet.sheetName}!A1:${colLen}${data.length + 1}`;
     const visibleCols = new Set<string>(sheetConfig.visibleCols);
     const headerCols = [];
-    Object.keys(data[0]).forEach(key => {
-      if(visibleCols.has(key)) headerCols.push(key);
-    })
+    Object.keys(data[0]).forEach((key) => {
+      if (visibleCols.has(key)) headerCols.push(key);
+    });
     const values = [headerCols];
     data.forEach((row) => {
       values.push([]);
@@ -267,6 +285,43 @@ class SpreadSheetService implements ISpreadSheetService {
     if (filteredRes.length !== 1)
       return Promise.reject(`No sheet exists with id ${sheetId}`);
     return filteredRes[0];
+  }
+  async setConfigsFromFormula(
+    spreadsheetId: string,
+    sheetId: number,
+    configs: FormulaConfigs
+  ): Promise<void> {
+    const sheetConfigs: SheetConfigs = this.getConfigsFromFormulaConfigs(configs);
+    this.setConfigs(spreadsheetId,sheetId,sheetConfigs);
+  }
+  private getConfigsFromFormulaConfigs(configs: FormulaConfigs): SheetConfigs {
+    const groupBy = configs.groupBy.split(";");
+    const visibleCols = configs.visibleCols.split(";");
+    const splitBy = configs.splitBy.split(";");
+    const functionCols: AggFunc[] = configs.functionCols
+      .split(";")
+      .map((val) => {
+        const [col, fnType] = val.split(":");
+        return [col, fnType];
+      });
+    const filterBy: Filter[] = configs.filterBy.split(";").map((val) => {
+      const [colId, filterType, value] = val.split(":");
+      return { colId, filterType: filterType as FilterType, value };
+    });
+    const orderBy: OrderBy[] = configs.orderBy.split(";").map(val => {
+      const [colId,orderByType] = val.split(":");
+      return {colId,orderByType: orderByType as OrderByType};
+    });
+    return {
+      groupBy,
+      dataSourceId:configs.dataSourceId,
+      filterBy,
+      functionCols,
+      orderBy,
+      splitBy,
+      visibleCols,
+      id:""
+    }
   }
 }
 let spreadSheetServiceInstance: ISpreadSheetService | null = null;

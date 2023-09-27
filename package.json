@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "deploy": "npm i && tsc",
-    "start": "nodemon dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "start": "nodemon dist/index.js --host",
+    "dev": "nodemon src/index.ts --host"
   },
   "repository": {
     "type": "git",
