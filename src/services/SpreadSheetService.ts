@@ -232,6 +232,7 @@ class SpreadSheetService implements ISpreadSheetService {
       dataServiceInstance
         .process(sheetConfig, data.insert)
         .then((transformedData: any[]) => {
+          console.log("transformedData: ",transformedData);
           this.sendData(sheet, sheetConfig, transformedData, spreadsheetId);
         });
     });
@@ -292,6 +293,7 @@ class SpreadSheetService implements ISpreadSheetService {
     configs: FormulaConfigs
   ): Promise<void> {
     const sheetConfigs: SheetConfigs = this.getConfigsFromFormulaConfigs(configs);
+    console.log("sheetConfigs:",sheetConfigs);
     this.setConfigs(spreadsheetId,sheetId,sheetConfigs);
   }
   private getConfigsFromFormulaConfigs(configs: FormulaConfigs): SheetConfigs {
