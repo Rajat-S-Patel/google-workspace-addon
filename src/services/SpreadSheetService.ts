@@ -297,20 +297,21 @@ class SpreadSheetService implements ISpreadSheetService {
     this.setConfigs(spreadsheetId,sheetId,sheetConfigs);
   }
   private getConfigsFromFormulaConfigs(configs: FormulaConfigs): SheetConfigs {
-    const groupBy = configs.groupBy.split(";");
-    const visibleCols = configs.visibleCols.split(";");
-    const splitBy = configs.splitBy.split(";");
+    const groupBy = configs.groupBy.split(";").filter(val => val.length > 0);
+    const visibleCols = configs.visibleCols.split(";").filter(val => val.length > 0);
+    const splitBy = configs.splitBy.split(";").filter(val => val.length > 0);
     const functionCols: AggFunc[] = configs.functionCols
       .split(";")
+      .filter(val => val.length > 0)
       .map((val) => {
         const [col, fnType] = val.split(":");
         return [col, fnType];
       });
-    const filterBy: Filter[] = configs.filterBy.split(";").map((val) => {
+    const filterBy: Filter[] = configs.filterBy.split(";").filter(val => val.length > 0).map((val) => {
       const [colId, filterType, value] = val.split(":");
       return { colId, filterType: filterType as FilterType, value };
     });
-    const orderBy: OrderBy[] = configs.orderBy.split(";").map(val => {
+    const orderBy: OrderBy[] = configs.orderBy.split(";").filter(val => val.length > 0).map(val => {
       const [colId,orderByType] = val.split(":");
       return {colId,orderByType: orderByType as OrderByType};
     });
