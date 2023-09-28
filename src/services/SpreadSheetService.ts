@@ -127,7 +127,22 @@ class SpreadSheetService implements ISpreadSheetService {
     this.sheetMetaDataMap.set(spreadSheetId, new Map<number, SheetMetaData>());
   }
   getFormulaFromConfigs(configs: SheetConfigs): string {
-    return "SUM(GROUP(1,2,3))";
+    const startCell = "A1";
+    const groupBy = configs.groupBy.join(";");
+    const splitBy = configs.splitBy.join(";");
+    const visibleCols = configs.visibleCols.join(";");
+    const functionCols = configs.functionCols
+      .map((val) => val.join(":"))
+      .join(";");
+    const filterBy = configs.filterBy
+      .map((val) => Object.values(val).join(":"))
+      .join(";");
+    const orderBy = configs.orderBy
+      .map((val) => Object.values(val).join(":"))
+      .join(";");
+    const formula = `FetchData("${startCell}","${configs.dataSourceId}","${visibleCols}","${groupBy}","${functionCols}","${filterBy}","${orderBy}","${splitBy}")`;
+    console.info("formula:", formula);
+    return formula;
   }
   async setConfigs(
     spreadSheetId: string,
@@ -232,7 +247,7 @@ class SpreadSheetService implements ISpreadSheetService {
       dataServiceInstance
         .process(sheetConfig, data.insert)
         .then((transformedData: any[]) => {
-          console.log("transformedData: ",transformedData);
+          console.log("transformedData: ", transformedData);
           this.sendData(sheet, sheetConfig, transformedData, spreadsheetId);
         });
     });
@@ -292,39 +307,48 @@ class SpreadSheetService implements ISpreadSheetService {
     sheetId: number,
     configs: FormulaConfigs
   ): Promise<void> {
-    const sheetConfigs: SheetConfigs = this.getConfigsFromFormulaConfigs(configs);
-    console.log("sheetConfigs:",sheetConfigs);
-    this.setConfigs(spreadsheetId,sheetId,sheetConfigs);
+    const sheetConfigs: SheetConfigs =
+      this.getConfigsFromFormulaConfigs(configs);
+    console.log("sheetConfigs:", sheetConfigs);
+    this.setConfigs(spreadsheetId, sheetId, sheetConfigs);
   }
   private getConfigsFromFormulaConfigs(configs: FormulaConfigs): SheetConfigs {
-    const groupBy = configs.groupBy.split(";").filter(val => val.length > 0);
-    const visibleCols = configs.visibleCols.split(";").filter(val => val.length > 0);
-    const splitBy = configs.splitBy.split(";").filter(val => val.length > 0);
+    const groupBy = configs.groupBy.split(";").filter((val) => val.length > 0);
+    const visibleCols = configs.visibleCols
+      .split(";")
+      .filter((val) => val.length > 0);
+    const splitBy = configs.splitBy.split(";").filter((val) => val.length > 0);
     const functionCols: AggFunc[] = configs.functionCols
       .split(";")
-      .filter(val => val.length > 0)
+      .filter((val) => val.length > 0)
       .map((val) => {
         const [col, fnType] = val.split(":");
         return [col, fnType];
       });
-    const filterBy: Filter[] = configs.filterBy.split(";").filter(val => val.length > 0).map((val) => {
-      const [colId, filterType, value] = val.split(":");
-      return { colId, filterType: filterType as FilterType, value };
-    });
-    const orderBy: OrderBy[] = configs.orderBy.split(";").filter(val => val.length > 0).map(val => {
-      const [colId,orderByType] = val.split(":");
-      return {colId,orderByType: orderByType as OrderByType};
-    });
+    const filterBy: Filter[] = configs.filterBy
+      .split(";")
+      .filter((val) => val.length > 0)
+      .map((val) => {
+        const [colId, filterType, value] = val.split(":");
+        return { colId, filterType: filterType as FilterType, value };
+      });
+    const orderBy: OrderBy[] = configs.orderBy
+      .split(";")
+      .filter((val) => val.length > 0)
+      .map((val) => {
+        const [colId, orderByType] = val.split(":");
+        return { colId, orderByType: orderByType as OrderByType };
+      });
     return {
       groupBy,
-      dataSourceId:configs.dataSourceId,
+      dataSourceId: configs.dataSourceId,
       filterBy,
       functionCols,
       orderBy,
       splitBy,
       visibleCols,
-      id:""
-    }
+      id: "",
+    };
   }
 }
 let spreadSheetServiceInstance: ISpreadSheetService | null = null;

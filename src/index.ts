@@ -76,12 +76,12 @@ app.post("/home", (req, res) => {
 
 app.post("/configs", (req, res) => {
   const data = req.body;
-  console.log("data: ", data);
-  spreadSheetService.setConfigs(
-    data.spreadSheetId,
-    Number(data.sheetId),
-    data.configs
-  );
+  console.log("configs: ", data);
+  // spreadSheetService.setConfigs(
+  //   data.spreadSheetId,
+  //   Number(data.sheetId),
+  //   data.configs
+  // );
   const formula = spreadSheetService.getFormulaFromConfigs(data.configs);
   res.json({ formula });
 });
