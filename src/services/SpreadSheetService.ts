@@ -66,10 +66,11 @@ export interface FormulaConfigs {
   orderBy: string;
   filterBy: string;
   dataSourceId: string;
+  startCell:string;
 }
 
 export interface SheetConfigs {
-  id: string;
+  startCell: string;
   visibleCols: string[];
   functionCols: AggFunc[];
   groupBy: string[];
@@ -127,7 +128,7 @@ class SpreadSheetService implements ISpreadSheetService {
     this.sheetMetaDataMap.set(spreadSheetId, new Map<number, SheetMetaData>());
   }
   getFormulaFromConfigs(configs: SheetConfigs): string {
-    const startCell = "A1";
+    configs.startCell = "A1";
     const groupBy = configs.groupBy.join(";");
     const splitBy = configs.splitBy.join(";");
     const visibleCols = configs.visibleCols.join(";");
@@ -140,7 +141,7 @@ class SpreadSheetService implements ISpreadSheetService {
     const orderBy = configs.orderBy
       .map((val) => Object.values(val).join(":"))
       .join(";");
-    const formula = `FetchData("${startCell}","${configs.dataSourceId}","${visibleCols}","${groupBy}","${functionCols}","${filterBy}","${orderBy}","${splitBy}")`;
+    const formula = `FetchData("${configs.startCell}","${configs.dataSourceId}","${visibleCols}","${groupBy}","${functionCols}","${filterBy}","${orderBy}","${splitBy}")`;
     console.info("formula:", formula);
     return formula;
   }
@@ -260,9 +261,13 @@ class SpreadSheetService implements ISpreadSheetService {
   ) {
     const sheetApi = this.sheetApi.get(spreadsheetId);
     if (!sheetApi || data.length === 0) return;
-    const colLen = A1.toCol(sheetConfig.visibleCols.length);
 
-    const range = `${sheet.sheetName}!A1:${colLen}${data.length + 1}`;
+    const initialCol = A1.getCol(sheetConfig.startCell)-1;
+    const initialRow = A1.getRow(sheetConfig.startCell)-1;
+    const colLen = A1.toCol(sheetConfig.visibleCols.length + initialCol);
+
+    const range = `${sheet.sheetName}!${sheetConfig.startCell}:${colLen}${data.length + 1 + initialRow}`;
+    console.log("range=datalength: ",range,data.length);
     const visibleCols = new Set<string>(sheetConfig.visibleCols);
     const headerCols = [];
     Object.keys(data[0]).forEach((key) => {
@@ -347,7 +352,7 @@ class SpreadSheetService implements ISpreadSheetService {
       orderBy,
       splitBy,
       visibleCols,
-      id: "",
+      startCell: configs.startCell,
     };
   }
 }
