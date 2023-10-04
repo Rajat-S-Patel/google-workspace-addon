@@ -85,11 +85,11 @@ app.post("/configs", (req, res) => {
   const formula = spreadSheetService.getFormulaFromConfigs(data.configs);
   res.json({ formula });
 });
-app.post("/fetch-data", (req, res) => {
+app.post("/fetch-data", async (req, res) => {
   const { configs,spreadsheetId,activeSheetId } = req.body;
   console.log("req.body: ",req.body);
   // now parse the configs and write data
-  spreadSheetService.setConfigsFromFormula(spreadsheetId,activeSheetId,configs);
+  await spreadSheetService.setConfigsFromFormula(spreadsheetId,activeSheetId,configs);
   return res.end();
 });
 app.listen(PORT, () => {

@@ -315,7 +315,7 @@ class SpreadSheetService implements ISpreadSheetService {
     const sheetConfigs: SheetConfigs =
       this.getConfigsFromFormulaConfigs(configs);
     console.log("sheetConfigs:", sheetConfigs);
-    this.setConfigs(spreadsheetId, sheetId, sheetConfigs);
+    await this.setConfigs(spreadsheetId, sheetId, sheetConfigs);
   }
   private getConfigsFromFormulaConfigs(configs: FormulaConfigs): SheetConfigs {
     const groupBy = configs.groupBy.split(";").filter((val) => val.length > 0);
