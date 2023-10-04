@@ -118,7 +118,7 @@ class WebSocketService implements IWebSocket {
         type: "FETCH_CLIENT_POSITIONS",
         action: "refresh",
         time: 0,
-        loginUser: "1001",
+        loginUser: this.credentials.userName,
       });
     }, 5000);
   }
